@@ -1,17 +1,52 @@
 const request = require('request-promise-native')
 
 const projectsUrl = 'https://a806-housingconnect.nyc.gov/nyclottery/LttryProject/GetPublishedCurrentUpcomingProjects'
-const neighborhoodLookupUrl = 'https://a806-housingconnect.nyc.gov/nyclottery/lottery/deferredjs/E7C31D21DC8111B2EE2A6A7B0D82B7D1/5.cache.js'
+const neighborhoodLookupUrl = 'https://a806-housingconnect.nyc.gov/nyclottery/LttryLookup/LookupValues?name=Neighborhood-'
 
-const mapResult = result => ({
-  id: result.LttryProjSeqNo,
+const mapLookupValue = result => ({
+  id: result.LttryLookupSeqNo,
+  shortName: result.ShortName,
+  longName: result.LongName,
+  sortOrder: result.SortOrder,
+  valueType: result.lookupName
+})
+
+const lookupValueListToHash = ([list]) => {
+  const hash = {}
+  for (let value of list) {
+    const mappedValue = mapLookupValue(value)
+    hash[mappedValue.id] = mappedValue
+  }
+  return hash
+}
+
+const padLeft = (padder, length, v) => padder.repeat(length - v.length) + v
+const padMonthDay = padLeft.bind(null, '0', 2)
+
+const parseStartEndDate = dateString => {
+  const [m, d, y] = dateString.split('/')
+  return new Date(`${y}-${padMonthDay(m)}-${padMonthDay(d)}T00:00:00`)
+}
+
+const parsePublishedDate = dateString => {
+  const unixTimestamp = parseInt(dateString.replace(/(Date|\/)/g, ''), 10)
+  return new Date(unixTimestamp)
+}
+
+const mapProjectResult = (neighborhoodLookup, result) => ({
+  id: result.LttryProjeqNo,
   name: result.ProjectName,
-  startDate: result.AppStartDt,
-  endDate: result.AppEndDt,
+  neighborhood: neighborhoodLookup[result.NeighborhoodLkp],
+  startDate: result.AppStartDt && parseStartEndDate(result.AppStartDt),
+  endDate: result.AppEndDt && parseStartEndDate(result.AppEndDt),
+  publishedDate: result.PublishedDate && parsePublishedDate(result.PublishedDate),
   published: result.Published,
   withdrawn: result.Withdrawn,
   mapLink: result.MapLink
 })
+
+const mapProjectResults = (neighborhoodLookup, results) =>
+  results.map(mapProjectResult.bind(null, neighborhoodLookup))
 
 const parseJson = jsonString =>
   new Promise((resolve, reject) => {
@@ -23,6 +58,22 @@ const parseJson = jsonString =>
     }
   })
 
-request(projectsUrl)
-  .then(parseJson)
-  .then(({ Result: results }) => console.log(results.map(mapResult)))
+const parseResult = result => parseJson(result).then(({ Result }) => Result)
+
+const getNeighborhoodLookup = () =>
+  request(neighborhoodLookupUrl)
+    .then(parseResult)
+    .then(lookupValueListToHash)
+
+const getProjects = (neighborhoodLookup) =>
+  request(projectsUrl)
+    .then(parseResult)
+    .then(mapProjectResults.bind(null, neighborhoodLookup))
+
+async function query () {
+  const neighborhoodLookup = await getNeighborhoodLookup()
+  const projects = await getProjects(neighborhoodLookup)
+  console.log(projects)
+}
+
+query()
