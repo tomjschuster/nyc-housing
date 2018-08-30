@@ -33,6 +33,24 @@ const parsePublishedDate = dateString => {
   return new Date(unixTimestamp)
 }
 
+const toTitleCase = string =>
+  string
+    .split('')
+    .map((l, i) => i ? l.toLowerCase() : l.toUpperCase())
+    .join('')
+
+const parseAddresses = url =>
+  url
+    .split('s=')[1]
+    .replace(/a:/g, '')
+    .split(';')
+    .map(x => {
+      const [number, street, borough] =
+        x.split(',').map(x => x.split('+').map(toTitleCase).join(' '))
+
+      return `${number} ${street}, ${borough}, NY`
+    })
+
 const mapProjectResult = (neighborhoodLookup, result) => ({
   id: result.LttryProjeqNo,
   name: result.ProjectName,
@@ -42,7 +60,7 @@ const mapProjectResult = (neighborhoodLookup, result) => ({
   publishedDate: result.PublishedDate && parsePublishedDate(result.PublishedDate),
   published: result.Published,
   withdrawn: result.Withdrawn,
-  mapLink: result.MapLink
+  addresses: parseAddresses(result.MapLink)
 })
 
 const mapProjectResults = (neighborhoodLookup, results) =>
