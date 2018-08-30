@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "migrate": "node 'node_modules/db-migrate/bin/db-migrate' up",
+    "rollback": "node 'node_modules/db-migrate/bin/db-migrate' down",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "db-migrate": "^0.11.1",
+    "db-migrate-pg": "^0.4.0",
+    "pg": "^7.4.3",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   }
