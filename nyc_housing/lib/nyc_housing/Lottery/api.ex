@@ -1,4 +1,4 @@
-defmodule Data.NycLottery do
+defmodule NycHousing.Lottery.Api do
   use HTTPoison.Base
 
   @expected_fields ~w(

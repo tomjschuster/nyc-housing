@@ -8,6 +8,7 @@ defmodule NycHousing.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      NycHousing.Lottery.Store
       # Starts a worker by calling: NycHousing.Worker.start_link(arg)
       # {NycHousing.Worker, arg},
     ]
