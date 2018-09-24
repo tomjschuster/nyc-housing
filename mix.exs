@@ -7,11 +7,11 @@ defmodule NycHousing.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger],
@@ -19,7 +19,6 @@ defmodule NycHousing.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:httpoison, "~> 1.0"},
@@ -29,6 +28,13 @@ defmodule NycHousing.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
       {:quantum, "~> 2.3"}
+    ]
+  end
+
+  defp aliases do
+    [
+      setup: ["ecto.create", "ecto.migrate"],
+      reset: ["ecto.drop", "setup"]
     ]
   end
 end

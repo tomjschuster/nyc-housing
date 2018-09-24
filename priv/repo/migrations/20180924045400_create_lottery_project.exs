@@ -12,8 +12,7 @@ defmodule NycHousing.Repo.Migrations.CreateLotteryProject do
       add(:published?, :boolean)
       add(:published_date, :date)
       add(:withdrawn?, :boolean)
-      add(:deleted?, :date)
-      add(:deleted_dat, :boolean)
+      add(:deleted_date, :date)
 
       timestamps()
     end

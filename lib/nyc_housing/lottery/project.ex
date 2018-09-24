@@ -13,8 +13,7 @@ defmodule NycHousing.Lottery.Project do
     field(:published?, :boolean)
     field(:published_date, :date)
     field(:withdrawn?, :boolean)
-    field(:deleted?, :date)
-    field(:deleted_dat, :boolean)
+    field(:deleted_date, :date)
 
     timestamps()
   end
@@ -69,5 +68,10 @@ defmodule NycHousing.Lottery.Project do
       :published_date,
       :withdrawn?
     ])
+  end
+
+  def deleted_changeset(%Project{} = project) do
+    project
+    |> cast(%{deleted_date: Timex.today()}, [:deleted_date])
   end
 end
