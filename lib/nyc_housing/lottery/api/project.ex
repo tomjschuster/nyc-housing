@@ -32,7 +32,8 @@ defmodule NycHousing.Lottery.Api.Project do
     result
     |> Map.take(@expected_fields)
     |> Enum.into(%{}, &(&1 |> process_k() |> process_kv()))
-    |> map_project()
+
+    # |> map_project()
   end
 
   defp process_result(result) when is_list(result) do

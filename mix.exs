@@ -25,7 +25,10 @@ defmodule NycHousing.MixProject do
       {:httpoison, "~> 1.0"},
       {:poison, "~> 3.1"},
       {:recase, "~> 0.2"},
-      {:timex, "~> 3.1"}
+      {:timex, "~> 3.1"},
+      {:postgrex, ">= 0.0.0"},
+      {:ecto, "~> 2.1"},
+      {:quantum, "~> 2.3"}
     ]
   end
 end
