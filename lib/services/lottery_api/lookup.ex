@@ -1,6 +1,5 @@
-defmodule NycHousing.Lottery.Api.Lookup do
+defmodule Services.LotteryApi.Lookup do
   use HTTPoison.Base
-  alias NycHousing.Lottery.Neighborhood
 
   @base "https://a806-housingconnect.nyc.gov/nyclottery/LttryLookup/LookupValues"
 
@@ -34,17 +33,18 @@ defmodule NycHousing.Lottery.Api.Lookup do
     result
     |> Map.take(@expected_fields)
     |> Enum.into(%{}, &(&1 |> process_k()))
-    |> map_lookup()
+
+    # |> map_lookup()
   end
 
   defp process_k({k, v}), do: {k |> Recase.to_snake() |> String.to_atom(), v}
 
-  defp map_lookup(%{lookup_name: "Neighborhood-"} = result) do
-    %Neighborhood{
-      id: result.lttry_lookup_seq_no,
-      name: result.long_name,
-      short_name: result.short_name,
-      sort_order: result.sort_order
-    }
-  end
+  # defp map_lookup(%{lookup_name: "Neighborhood-"} = result) do
+  #   %Neighborhood{
+  #     id: result.lttry_lookup_seq_no,
+  #     name: result.long_name,
+  #     short_name: result.short_name,
+  #     sort_order: result.sort_order
+  #   }
+  # end
 end

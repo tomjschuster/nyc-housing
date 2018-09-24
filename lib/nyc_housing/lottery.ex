@@ -1,6 +1,6 @@
 defmodule NycHousing.Lottery do
-  alias NycHousing.Repo
-  alias NycHousing.Lottery.{Api, Project}
+  alias NycHousing.{Lottery, Repo}
+  alias Services.LotteryApi
 
   def synchronize do
     project_by_external_id = get_project_by_external_id()
@@ -11,17 +11,17 @@ defmodule NycHousing.Lottery do
   end
 
   defp get_project_by_external_id,
-    do: Project |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
+    do: Lottery.Project |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
 
   defp insert_update_api_projects(project_by_external_id) do
-    Api.list_projects!()
+    LotteryApi.list_projects!()
     |> Enum.map(fn %{lttry_proj_seq_no: external_id} = api_project ->
       case project_by_external_id do
         %{^external_id => project} ->
-          project |> Project.api_changeset(api_project) |> Repo.update!()
+          project |> Lottery.Project.api_changeset(api_project) |> Repo.update!()
 
         %{} ->
-          api_project |> Project.api_changeset() |> Repo.insert!()
+          api_project |> Lottery.Project.api_changeset() |> Repo.insert!()
       end
     end)
   end
@@ -32,7 +32,7 @@ defmodule NycHousing.Lottery do
     project_by_external_id
     |> Stream.map(&elem(&1, 1))
     |> Stream.filter(&(not Map.has_key?(api_project_by_external_id, &1.external_id)))
-    |> Stream.map(&Project.deleted_changeset/1)
+    |> Stream.map(&Lottery.Project.deleted_changeset/1)
     |> Stream.each(&Repo.update!/1)
     |> Stream.run()
   end

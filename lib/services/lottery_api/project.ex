@@ -1,6 +1,5 @@
-defmodule NycHousing.Lottery.Api.Project do
+defmodule Services.LotteryApi.Project do
   use HTTPoison.Base
-  alias NycHousing.Lottery.Project
 
   @base "https://a806-housingconnect.nyc.gov/nyclottery/LttryProject"
 
@@ -32,8 +31,6 @@ defmodule NycHousing.Lottery.Api.Project do
     result
     |> Map.take(@expected_fields)
     |> Enum.into(%{}, &(&1 |> process_k() |> process_kv()))
-
-    # |> map_project()
   end
 
   defp process_result(result) when is_list(result) do
@@ -102,19 +99,5 @@ defmodule NycHousing.Lottery.Api.Project do
     |> Integer.parse(10)
     |> elem(0)
     |> Timex.from_unix()
-  end
-
-  defp map_project(result) do
-    %Project{
-      id: result.lttry_proj_seq_no,
-      name: result.project_name,
-      neighborhood_id: result.neighborhood_lkp,
-      addresses: result.addresses,
-      start_date: result.app_start_dt,
-      end_date: result.app_end_dt,
-      published?: result.published,
-      published_date: result.published_date,
-      withdrawn?: result.withdrawn
-    }
   end
 end
