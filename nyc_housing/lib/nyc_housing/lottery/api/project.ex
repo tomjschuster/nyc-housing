@@ -1,5 +1,8 @@
-defmodule NycHousing.Lottery.Api do
+defmodule NycHousing.Lottery.Api.Project do
   use HTTPoison.Base
+  alias NycHousing.Lottery.Project
+
+  @base "https://a806-housingconnect.nyc.gov/nyclottery/LttryProject"
 
   @expected_fields ~w(
     LttryProjSeqNo
@@ -11,19 +14,12 @@ defmodule NycHousing.Lottery.Api do
     Published
     Withdrawn
     MapLink
-    LttryLookupSeqNo
-    ShortName
-    LongName
-    SortOrder
-    lookupName
   )
 
   @mdy_fields [:app_start_dt, :app_end_dt]
   @epoch_fields [:published_date]
 
-  def process_url(url) do
-    "https://a806-housingconnect.nyc.gov/nyclottery" <> url
-  end
+  def process_url(url), do: @base <> url
 
   def process_response_body(body) do
     body
@@ -36,6 +32,7 @@ defmodule NycHousing.Lottery.Api do
     result
     |> Map.take(@expected_fields)
     |> Enum.into(%{}, &(&1 |> process_k() |> process_kv()))
+    |> map_project()
   end
 
   defp process_result(result) when is_list(result) do
@@ -104,5 +101,19 @@ defmodule NycHousing.Lottery.Api do
     |> Integer.parse(10)
     |> elem(0)
     |> Timex.from_unix()
+  end
+
+  defp map_project(result) do
+    %Project{
+      id: result.lttry_proj_seq_no,
+      name: result.project_name,
+      neighborhood_id: result.neighborhood_lkp,
+      addresses: result.addresses,
+      start_date: result.app_start_dt,
+      end_date: result.app_end_dt,
+      published?: result.published,
+      published_date: result.published_date,
+      withdrawn?: result.withdrawn
+    }
   end
 end
