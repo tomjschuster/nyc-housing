@@ -1,6 +1,7 @@
 defmodule NycHousing.Lottery.Store do
   use GenServer
-  alias NycHousing.Lottery.Api
+  alias NycHousing.Repo
+  alias NycHousing.Lottery.{Project, Neighborhood}
 
   # Client
   def start_link(opts) when is_list(opts) do
@@ -11,13 +12,13 @@ defmodule NycHousing.Lottery.Store do
   def list_projects, do: GenServer.call(__MODULE__, :list_projects)
   def get_neighborhood(id), do: GenServer.call(__MODULE__, {:get_neighborhood, id})
   def list_neighborhoods, do: GenServer.call(__MODULE__, :list_neighborhoods)
+  def refresh, do: GenServer.call(__MODULE__, :refresh)
 
   # Server
   def init(:ok) do
-    with {:ok, projects} <- fetch_with_retry(&Api.list_projects/0),
-         {:ok, neighborhoods} = fetch_with_retry(&Api.list_neighborhoods/0) do
-      {:ok, %{projects: projects, neighborhoods: neighborhoods}}
-    end
+    projects = Repo.all(Project)
+    neighborhoods = Repo.all(Neighborhood)
+    {:ok, %{projects: projects, neighborhoods: neighborhoods}}
   end
 
   def handle_call({:get_project, id}, _from, state) do
@@ -44,24 +45,9 @@ defmodule NycHousing.Lottery.Store do
   def handle_call(:list_neighborhoods, _from, state),
     do: {:reply, state.neighborhoods, state}
 
-  def handle_cast(:refresh, _state) do
-    with {:ok, projects} <- fetch_with_retry(&Api.list_projects/0),
-         {:ok, neighborhoods} = fetch_with_retry(&Api.list_neighborhoods/0) do
-      {:noreply, %{projects: projects, neighborhoods: neighborhoods}}
-    end
-  end
-
-  defp fetch_with_retry(f, retries_remaining \\ 5) do
-    case {retries_remaining, f.()} do
-      {1, {:error, %HTTPoison.Error{}} = error} ->
-        {:error, error}
-
-      {_, _error = %HTTPoison.Error{}} ->
-        :timer.sleep(250)
-        fetch_with_retry(f, retries_remaining - 1)
-
-      {_, {:ok, result}} ->
-        {:ok, result}
-    end
+  def handle_call(:refresh, _from, _state) do
+    projects = Repo.all(Project)
+    neighborhoods = Repo.all(Neighborhood)
+    {:reply, :ok, %{projects: projects, neighborhoods: neighborhoods}}
   end
 end
