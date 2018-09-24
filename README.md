@@ -1,10 +1,6 @@
-- ~~Fetch, parse, and map housing data~~
-  - Start: 2018-08-30 00:00
-  - Finish: 2018-08-30 02:13 (2hr 13min)
-- Save housing info to db
-  - Start: 2018-08-30 02:14
-  - Stop: 2018-08-30 03:40 (1hr 26min; neighborhood/project migrations)
-- Chron job for updating data
-- API for querying data
+- RESTful API
+- More detailed neighborhood data
+- Front end
+- Users/Authentication
 - User saved queries
 - User email alerts
