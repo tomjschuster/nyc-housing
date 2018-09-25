@@ -2,6 +2,12 @@ defmodule NycHousing.Endpoint do
   import Plug.Conn
   alias NycHousing.Lottery.Project
 
+  def index_html(conn) do
+    conn
+    |> put_resp_header("content-type", "text/html; charset=utf-8")
+    |> send_file(200, "priv/static/index.html")
+  end
+
   def index_projects(conn) do
     projects = NycHousing.list_lottery_projects()
     json(conn, Enum.map(projects, &view_project/1))

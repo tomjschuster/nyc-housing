@@ -1,5 +1,7 @@
 defmodule NycHousing.Router do
   use Plug.Router
+
+  # plug(Plug.Static, from: "priv/static/")
   plug(:match)
 
   plug(
