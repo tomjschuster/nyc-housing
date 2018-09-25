@@ -10,7 +10,7 @@ defmodule NycHousing.Router do
 
   plug(:dispatch)
 
-  get("/projects", do: NycHousing.Endpoint.index_projects(conn))
-  get("/hello", do: NycHousing.Endpoint.show(conn))
+  get("/projects/:project_id", do: NycHousing.Endpoint.show_project(conn))
+  # get("/projects", do: NycHousing.Endpoint.index_projects(conn))
   match(_, do: send_resp(conn, 404, "Not Found"))
 end

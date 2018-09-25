@@ -7,11 +7,20 @@ defmodule NycHousing.Endpoint do
   end
 
   def index_projects(conn) do
-    projects = NycHousing.list_projects()
+    projects = NycHousing.list_lottery_projects()
     json(conn, [])
   end
 
+  def show_project(conn) do
+    IO.inspect(conn)
+    {id, ""} = Integer.parse(conn.params["project_id"])
+    project = NycHousing.get_lottery_project(id)
+    json(conn, %{})
+  end
+
   defp json(conn, data) do
-    send_resp(conn, conn.status || 200, "application/json", Poison.encode!(data))
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(conn.status || 200, Poison.encode!(data))
   end
 end
