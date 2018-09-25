@@ -8,6 +8,11 @@ defmodule NycHousing.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      Plug.Adapters.Cowboy2.child_spec(
+        scheme: :http,
+        plug: NycHousing.Router,
+        options: [port: 4000]
+      ),
       NycHousing.Repo,
       NycHousing.Scheduler,
       NycHousing.Lottery.Store
