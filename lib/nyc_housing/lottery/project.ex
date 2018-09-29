@@ -7,6 +7,7 @@ defmodule NycHousing.Lottery.Project do
     field(:external_id, :integer)
     field(:name, :string)
     field(:neighborhood_id, :integer)
+    field(:borough_id, :integer)
     field(:addresses, {:array, :string})
     field(:start_date, :date)
     field(:end_date, :date)
@@ -23,6 +24,7 @@ defmodule NycHousing.Lottery.Project do
       external_id: api_result.lttry_proj_seq_no,
       name: api_result.project_name,
       neighborhood_id: api_result.neighborhood_id,
+      borough_id: api_result.borough_id,
       addresses: api_result.addresses,
       start_date: api_result.app_start_dt,
       end_date: api_result.app_end_dt,
@@ -36,6 +38,7 @@ defmodule NycHousing.Lottery.Project do
       :external_id,
       :name,
       :neighborhood_id,
+      :borough_id,
       :addresses,
       :start_date,
       :end_date,
@@ -49,6 +52,7 @@ defmodule NycHousing.Lottery.Project do
     params = %{
       name: api_result.project_name,
       neighborhood_id: api_result.neighborhood_id,
+      borough_id_id: api_result.borough_id_id,
       addresses: api_result.addresses,
       start_date: api_result.app_start_dt,
       end_date: api_result.app_end_dt,
@@ -60,6 +64,7 @@ defmodule NycHousing.Lottery.Project do
     project
     |> cast(params, [
       :name,
+      :boroughId_id,
       :neighborhood_id,
       :addresses,
       :start_date,

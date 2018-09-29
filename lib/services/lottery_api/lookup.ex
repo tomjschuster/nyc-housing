@@ -12,7 +12,8 @@ defmodule Services.LotteryApi.Lookup do
   )
 
   @lookup_params %{
-    "neighborhood" => "Neighborhood-"
+    "neighborhood" => "Neighborhood-",
+    "borough" => "Boro"
   }
 
   def process_url(field),

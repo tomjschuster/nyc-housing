@@ -22,6 +22,11 @@ defmodule NycHousing.Endpoint do
     end
   end
 
+  def index_neighborhoods(conn) do
+    neighborhoods = NycHousing.list_lottery_neighborhoods()
+    json(conn, Enum.map(neighborhoods, &view_neighborhood/1))
+  end
+
   defp json(conn, data) do
     conn
     |> put_resp_content_type("application/json")
@@ -36,6 +41,17 @@ defmodule NycHousing.Endpoint do
       addresses: project.addresses,
       startDate: project.start_date,
       endDate: project.end_date
+    }
+  end
+
+  defp view_neighborhood(neighborhood) do
+    %{
+      id: neighborhood.id,
+      name: neighborhood.name,
+      shortName: neighborhood.short_name,
+      sortOrder: neighborhood.sort_order,
+      startDate: neighborhood.start_date,
+      endDate: neighborhood.end_date
     }
   end
 end

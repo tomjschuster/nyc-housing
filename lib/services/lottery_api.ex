@@ -24,4 +24,11 @@ defmodule Services.LotteryApi do
   end
 
   def list_neighborhoods!, do: Lookup.get!(:neighborhood).body
+
+  def list_boroughs do
+    with {:ok, %{body: boroughs}} <- Lookup.get(:borough),
+         do: {:ok, boroughs}
+  end
+
+  def list_boroughs!, do: Lookup.get!(:borough).body
 end

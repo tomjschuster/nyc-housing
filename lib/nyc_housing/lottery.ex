@@ -4,12 +4,14 @@ defmodule NycHousing.Lottery do
 
   def synchronize do
     neighborhood_by_external_id = get_neighborhood_by_external_id()
+    borough_by_external_id = get_borough_by_external_id()
     project_by_external_id = get_project_by_external_id()
 
     insert_update_api_neighborhoods(neighborhood_by_external_id)
+    insert_update_api_boroughs(borough_by_external_id)
 
     project_by_external_id
-    |> insert_update_api_projects(neighborhood_by_external_id)
+    |> insert_update_api_projects(borough_by_external_id, neighborhood_by_external_id)
     |> update_deleted_projects(project_by_external_id)
 
     Lottery.Store.refresh()
@@ -17,6 +19,9 @@ defmodule NycHousing.Lottery do
 
   defp get_neighborhood_by_external_id,
     do: Lottery.Neighborhood |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
+
+  defp get_borough_by_external_id,
+    do: Lottery.Borough |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
 
   defp get_project_by_external_id,
     do: Lottery.Project |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
@@ -38,11 +43,39 @@ defmodule NycHousing.Lottery do
     end)
   end
 
-  defp insert_update_api_projects(project_by_external_id, neighborhood_by_external_id) do
+  defp insert_update_api_boroughs(borough_by_external_id) do
+    LotteryApi.list_boroughs!()
+    |> Enum.map(fn %{lttry_lookup_seq_no: external_id} = api_borough ->
+      case borough_by_external_id do
+        %{^external_id => borough} ->
+          borough
+          |> Lottery.Borough.api_changeset(api_borough)
+          |> Repo.update!()
+
+        %{} ->
+          api_borough
+          |> Lottery.Borough.api_changeset()
+          |> Repo.insert!()
+      end
+    end)
+  end
+
+  defp insert_update_api_projects(
+         project_by_external_id,
+         neighborhood_by_external_id,
+         borough_by_external_id
+       ) do
     LotteryApi.list_projects!()
-    |> Stream.map(fn %{neighborhood_lkp: external_id} = api_project ->
-      neighborhood = Map.get(neighborhood_by_external_id, external_id)
-      Map.put(api_project, :neighborhood_id, neighborhood && neighborhood.id)
+    |> Stream.map(fn %{
+                       neighborhood_lkp: neighborhood_external_id,
+                       boro_lkp: borough_external_id
+                     } = api_project ->
+      neighborhood = Map.get(neighborhood_by_external_id, neighborhood_external_id)
+      borough = Map.get(borough_by_external_id, borough_external_id)
+
+      api_project
+      |> Map.put(:neighborhood_id, neighborhood && neighborhood.id)
+      |> Map.put(:borough_id, borough && borough.id)
     end)
     |> Enum.map(fn %{lttry_proj_seq_no: external_id} = api_project ->
       case project_by_external_id do

@@ -7,6 +7,7 @@ defmodule Services.LotteryApi.Project do
     LttryProjSeqNo
     ProjectName
     NeighborhoodLkp
+    BoroLkp
     AppStartDt
     AppEndDt
     PublishedDate

@@ -6,6 +6,7 @@ defmodule NycHousing.Repo.Migrations.CreateLotteryProject do
       add(:external_id, :integer)
       add(:name, :string)
       add(:neighborhood_id, :integer)
+      add(:borough_id, :integer)
       add(:addresses, {:array, :string})
       add(:start_date, :date)
       add(:end_date, :date)
