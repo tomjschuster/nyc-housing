@@ -4,6 +4,8 @@ import Browser
 import Html exposing (Html, li, text, ul)
 import Http
 import Json.Decode as JD
+import Json.Decode.Pipeline as JDP
+import Project exposing (Project)
 import Task exposing (Task)
 
 
@@ -19,20 +21,9 @@ main =
         }
 
 
-type alias Project =
-    { id : Int
-    , name : String
-    }
-
-
-projectDecoder : JD.Decoder Project
-projectDecoder =
-    JD.map2 Project (JD.field "id" JD.int) (JD.field "name" JD.string)
-
-
 getProjects : Http.Request (List Project)
 getProjects =
-    Http.get "/projects" (JD.list projectDecoder)
+    Http.get "/projects" (JD.list Project.decoder)
 
 
 type alias Model =
@@ -64,9 +55,11 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "NYC Housing", body = [ ul [] (List.map viewProject model) ] }
+    { title = "NYC Housing"
+    , body = [ ul [] (List.map (Project.name >> viewProject) model) ]
+    }
 
 
-viewProject : Project -> Html Msg
-viewProject project =
-    li [] [ text project.name ]
+viewProject : Project.Name -> Html Msg
+viewProject projectName =
+    li [] [ text <| Project.nameToString <| projectName ]
