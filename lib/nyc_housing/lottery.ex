@@ -4,11 +4,12 @@ defmodule NycHousing.Lottery do
 
   def synchronize do
     neighborhood_by_external_id = get_neighborhood_by_external_id()
-    borough_by_external_id = get_borough_by_external_id()
-    project_by_external_id = get_project_by_external_id()
-
     insert_update_api_neighborhoods(neighborhood_by_external_id)
+
+    borough_by_external_id = get_borough_by_external_id()
     insert_update_api_boroughs(borough_by_external_id)
+
+    project_by_external_id = get_project_by_external_id()
 
     project_by_external_id
     |> insert_update_api_projects(borough_by_external_id, neighborhood_by_external_id)

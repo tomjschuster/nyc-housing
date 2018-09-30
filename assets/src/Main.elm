@@ -23,7 +23,7 @@ main =
 
 getProjects : Http.Request (List Project)
 getProjects =
-    Http.get "/projects" (JD.list Project.decoder)
+    Http.get "/api/projects" (JD.list Project.decoder)
 
 
 type alias Model =
@@ -50,6 +50,10 @@ update msg model =
             ( projects, Cmd.none )
 
         LoadProjects (Err err) ->
+            let
+                _ =
+                    Debug.log "err" err
+            in
             ( [], Cmd.none )
 
 

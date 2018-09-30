@@ -23,8 +23,8 @@ defmodule NycHousing.Lottery.Project do
     params = %{
       external_id: api_result.lttry_proj_seq_no,
       name: api_result.project_name,
-      neighborhood_id: api_result.neighborhood_id,
-      borough_id: api_result.borough_id,
+      neighborhood_id: api_result.neighborhood_lkp,
+      borough_id: api_result.boro_lkp,
       addresses: api_result.addresses,
       start_date: api_result.app_start_dt,
       end_date: api_result.app_end_dt,
@@ -51,8 +51,8 @@ defmodule NycHousing.Lottery.Project do
   def api_changeset(%Project{} = project, api_result) when is_map(api_result) do
     params = %{
       name: api_result.project_name,
-      neighborhood_id: api_result.neighborhood_id,
-      borough_id_id: api_result.borough_id_id,
+      neighborhood_id: api_result.neighborhood_lkp,
+      borough_id_id: api_result.boro_lkp,
       addresses: api_result.addresses,
       start_date: api_result.app_start_dt,
       end_date: api_result.app_end_dt,

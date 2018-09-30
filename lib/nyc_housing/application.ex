@@ -10,7 +10,7 @@ defmodule NycHousing.Application do
     children = [
       Plug.Adapters.Cowboy2.child_spec(
         scheme: :http,
-        plug: NycHousing.Router,
+        plug: NycHousing.Endpoint,
         options: [port: 4000]
       ),
       NycHousing.Repo,

@@ -1,6 +1,30 @@
 defmodule NycHousing.Endpoint do
+  use Plug.Router
   import Plug.Conn
   alias NycHousing.Lottery.Project
+
+  # Plugs
+
+  plug(:match)
+
+  plug(
+    Plug.Parsers,
+    parsers: [:json],
+    pass: ["application/json"],
+    json_decoder: Poison
+  )
+
+  plug(:dispatch)
+
+  # Routes
+
+  get("/", do: index_html(conn))
+  get("/api/projects/:project_id", do: show_project(conn))
+  get("/api/projects", do: index_projects(conn))
+  get("/api/neighborhoods", do: index_neighborhoods(conn))
+  match(_, do: send_resp(conn, 404, "Not Found"))
+
+  # Actions
 
   def index_html(conn) do
     conn
@@ -27,11 +51,18 @@ defmodule NycHousing.Endpoint do
     json(conn, Enum.map(neighborhoods, &view_neighborhood/1))
   end
 
+  def index_boroughs(conn) do
+    boroughs = NycHousing.list_lottery_boroughs()
+    json(conn, Enum.map(boroughs, &view_borough/1))
+  end
+
   defp json(conn, data) do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(conn.status || 200, Poison.encode!(data))
   end
+
+  # Views
 
   defp view_project(project) do
     %{
@@ -52,6 +83,17 @@ defmodule NycHousing.Endpoint do
       sortOrder: neighborhood.sort_order,
       startDate: neighborhood.start_date,
       endDate: neighborhood.end_date
+    }
+  end
+
+  defp view_borough(borough) do
+    %{
+      id: borough.id,
+      name: borough.name,
+      shortName: borough.short_name,
+      sortOrder: borough.sort_order,
+      startDate: borough.start_date,
+      endDate: borough.end_date
     }
   end
 end

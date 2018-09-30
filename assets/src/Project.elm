@@ -11,7 +11,7 @@ type Project
 type alias Info =
     { id : Id
     , name : Name
-    , neighborhood : Neighborhood
+    , neighborhood : NeighborhoodId
     , addresses : List Address
     }
 
@@ -28,8 +28,8 @@ type Address
     = Address String
 
 
-type Neighborhood
-    = Neighborhood String
+type NeighborhoodId
+    = NeighborhoodId Int
 
 
 name : Project -> Name
@@ -55,7 +55,7 @@ decoder =
         |> JD.succeed
         |> JDP.required "id" projectIdDecoder
         |> JDP.required "name" projectNameDecoder
-        |> JDP.required "neighborhood" neighborhoodDecoder
+        |> JDP.required "neighborhoodId" neighborhoodIdDecoder
         |> JDP.required "addresses" (JD.list addressDecoder)
         |> JD.map Project
 
@@ -70,11 +70,11 @@ projectNameDecoder =
     JD.map Name JD.string
 
 
+neighborhoodIdDecoder : JD.Decoder NeighborhoodId
+neighborhoodIdDecoder =
+    JD.map NeighborhoodId JD.int
+
+
 addressDecoder : JD.Decoder Address
 addressDecoder =
     JD.map Address JD.string
-
-
-neighborhoodDecoder : JD.Decoder Neighborhood
-neighborhoodDecoder =
-    JD.map Neighborhood JD.string
