@@ -1,5 +1,5 @@
 defmodule NycHousing.Lottery do
-  alias NycHousing.{Lottery, Repo}
+  alias NycHousing.{Store, Repo, Project, Neighborhood, Borough}
   alias Services.LotteryApi
 
   def synchronize do
@@ -15,17 +15,17 @@ defmodule NycHousing.Lottery do
     |> insert_update_api_projects(borough_by_external_id, neighborhood_by_external_id)
     |> update_deleted_projects(project_by_external_id)
 
-    Lottery.Store.refresh()
+    Store.refresh()
   end
 
   defp get_neighborhood_by_external_id,
-    do: Lottery.Neighborhood |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
+    do: Neighborhood |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
 
   defp get_borough_by_external_id,
-    do: Lottery.Borough |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
+    do: Borough |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
 
   defp get_project_by_external_id,
-    do: Lottery.Project |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
+    do: Project |> Repo.all() |> Enum.into(%{}, &{&1.external_id, &1})
 
   defp insert_update_api_neighborhoods(neighborhood_by_external_id) do
     LotteryApi.list_neighborhoods!()
@@ -33,12 +33,12 @@ defmodule NycHousing.Lottery do
       case neighborhood_by_external_id do
         %{^external_id => neighborhood} ->
           neighborhood
-          |> Lottery.Neighborhood.api_changeset(api_neighborhood)
+          |> Neighborhood.lottery_changeset(api_neighborhood)
           |> Repo.update!()
 
         %{} ->
           api_neighborhood
-          |> Lottery.Neighborhood.api_changeset()
+          |> Neighborhood.lottery_changeset()
           |> Repo.insert!()
       end
     end)
@@ -50,12 +50,12 @@ defmodule NycHousing.Lottery do
       case borough_by_external_id do
         %{^external_id => borough} ->
           borough
-          |> Lottery.Borough.api_changeset(api_borough)
+          |> Borough.lottery_changeset(api_borough)
           |> Repo.update!()
 
         %{} ->
           api_borough
-          |> Lottery.Borough.api_changeset()
+          |> Borough.lottery_changeset()
           |> Repo.insert!()
       end
     end)
@@ -82,12 +82,12 @@ defmodule NycHousing.Lottery do
       case project_by_external_id do
         %{^external_id => project} ->
           project
-          |> Lottery.Project.api_changeset(api_project)
+          |> Project.lottery_changeset(api_project)
           |> Repo.update!()
 
         %{} ->
           api_project
-          |> Lottery.Project.api_changeset()
+          |> Project.lottery_changeset()
           |> Repo.insert!()
       end
     end)
@@ -99,7 +99,7 @@ defmodule NycHousing.Lottery do
     project_by_external_id
     |> Stream.map(&elem(&1, 1))
     |> Stream.filter(&(not Map.has_key?(api_project_by_external_id, &1.external_id)))
-    |> Stream.map(&Lottery.Project.deleted_changeset/1)
+    |> Stream.map(&Project.deleted_changeset/1)
     |> Stream.each(&Repo.update!/1)
     |> Stream.run()
   end

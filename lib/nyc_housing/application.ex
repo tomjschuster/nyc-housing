@@ -15,7 +15,7 @@ defmodule NycHousing.Application do
       ),
       NycHousing.Repo,
       NycHousing.Scheduler,
-      NycHousing.Lottery.Store
+      NycHousing.Store
       # Starts a worker by calling: NycHousing.Worker.start_link(arg)
       # {NycHousing.Worker, arg},
     ]
