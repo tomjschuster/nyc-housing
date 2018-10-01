@@ -3,10 +3,10 @@ defmodule NycHousing.Repo.Migrations.CreateNeighborhood do
 
   def change do
     create table("neighborhood") do
-      add(:external_id, :integer)
       add(:name, :string)
       add(:short_name, :string)
       add(:sort_order, :integer)
+      add(:lottery_id, :integer)
 
       timestamps()
     end

@@ -3,7 +3,6 @@ defmodule NycHousing.Repo.Migrations.CreateLotteryProject do
 
   def change do
     create table("project") do
-      add(:external_id, :integer)
       add(:name, :string)
       add(:borough_id, :integer)
       add(:neighborhood_id, :integer)
@@ -11,8 +10,8 @@ defmodule NycHousing.Repo.Migrations.CreateLotteryProject do
       add(:published_date, :date)
       add(:start_date, :date)
       add(:end_date, :date)
-      add(:withdrawn?, :boolean)
       add(:deleted_date, :date)
+      add(:lottery_id, :integer)
 
       timestamps()
     end

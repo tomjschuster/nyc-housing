@@ -1,4 +1,4 @@
-defmodule Services.LotteryApi do
+defmodule NycHousing.Services.LotteryApi do
   alias __MODULE__.{Project, Lookup}
 
   @single_project "/GetProject?ProjNo="

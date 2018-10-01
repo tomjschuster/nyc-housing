@@ -27,7 +27,7 @@ defmodule NycHousing.MixProject do
       {:timex, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
-      {:quantum, "~> 2.3"},
+      # {:quantum, "~> 2.3"},
       {:cowboy, "~> 2.4"},
       {:plug, "~> 1.6"}
     ]
