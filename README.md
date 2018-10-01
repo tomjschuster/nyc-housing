@@ -1,5 +1,3 @@
-- RESTful API
-- More detailed neighborhood data
 - Front end
 - Users/Authentication
 - User saved queries
