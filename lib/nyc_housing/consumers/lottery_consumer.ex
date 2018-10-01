@@ -3,7 +3,6 @@ defmodule NycHousing.Consumers.LotteryConsumer do
 
   alias NycHousing.{Store, Repo, Project, Neighborhood, Borough}
   alias NycHousing.Services.LotteryApi
-  alias Timex.Duration
 
   # 2 hours
   @poll_interval 2 * 60 * 60 * 1000
@@ -18,7 +17,7 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   @spec poll() :: :ok
   def poll, do: GenServer.call(__MODULE__, :poll)
 
-  @spec poll() :: integer() | false
+  @spec next_poll() :: integer() | false
   def next_poll, do: GenServer.call(__MODULE__, :next_poll)
 
   # Server
