@@ -1,4 +1,4 @@
-defmodule NycHousing.Services.LotteryApi.Lookup do
+defmodule NycHousing.ExternalData.LotteryApi.Lookup do
   use HTTPoison.Base
 
   @base "https://a806-housingconnect.nyc.gov/nyclottery/LttryLookup/LookupValues"

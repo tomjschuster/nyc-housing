@@ -1,4 +1,4 @@
-defmodule NycHousing.Services.LotteryApi.Project do
+defmodule NycHousing.ExternalData.LotteryApi.Project do
   use HTTPoison.Base
 
   @base "https://a806-housingconnect.nyc.gov/nyclottery/LttryProject"

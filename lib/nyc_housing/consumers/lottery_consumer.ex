@@ -2,7 +2,7 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   use GenServer
 
   alias NycHousing.{Store, Repo, Project, Neighborhood, Borough}
-  alias NycHousing.Services.LotteryApi
+  alias NycHousing.ExternalData.LotteryApi
 
   # 2 hours
   @poll_interval 2 * 60 * 60 * 1000
@@ -23,20 +23,20 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   # Server
   @impl true
   def init(:ok) do
-    with :ok <- do_poll(),
+    with :ok <- poll_all(),
          timer <- schedule_work(),
          do: {:ok, timer}
   end
 
   @impl true
   def handle_info(:work, _timer) do
-    with :ok <- do_poll(), do: {:noreply, schedule_work()}
+    with :ok <- poll_projects(), do: {:noreply, schedule_work()}
   end
 
   @impl true
   def handle_call(:poll, _from, timer) do
     Process.cancel_timer(timer)
-    with :ok <- do_poll(), do: {:reply, :ok, schedule_work()}
+    with :ok <- poll_projects(), do: {:reply, :ok, schedule_work()}
   end
 
   @impl true
@@ -48,13 +48,13 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   @spec schedule_work() :: reference()
   defp schedule_work, do: Process.send_after(self(), :work, @poll_interval)
 
-  @spec do_poll() :: :ok
-  defp do_poll do
+  @spec poll_all() :: :ok
+  defp poll_all do
     IO.puts("Polling")
 
-    with :ok <- poll_neighborhoods(),
-         :ok <- poll_boroughs(),
-         :ok <- poll_projects(),
+    with {:ok, _} <- poll_neighborhoods(),
+         {:ok, _} <- poll_boroughs(),
+         {:ok, _} <- poll_projects(),
          IO.puts("Polling Complete"),
          do: :ok
   end
@@ -64,8 +64,9 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   defp poll_projects do
     projects = Store.list_projects()
     lottery_projects = LotteryApi.list_projects!()
-    sync_lottery_projects(projects, lottery_projects)
-    Store.refresh_projects()
+    updated_projects = sync_lottery_projects(projects, lottery_projects)
+
+    with :ok <- Store.refresh_projects(), do: {:ok, updated_projects}
   end
 
   @spec sync_lottery_projects([%Project{}], [map()]) :: [%Project{}]
@@ -95,10 +96,46 @@ defmodule NycHousing.Consumers.LotteryConsumer do
     borough = Store.get_borough_by_lottery_id(lottery_project.boro_lkp)
 
     lottery_project
-    |> Map.put(:neighborhood_id, neighborhood.id)
-    |> Map.put(:borough_id, borough.id)
+    |> add_neighborhood()
+    |> add_borough()
     |> Project.lottery_changeset()
     |> Repo.insert!()
+  end
+
+  @spec add_neighborhood(map()) :: map()
+  defp add_neighborhood(%{neighborhood_lkp: lottery_id} = lottery_project) do
+    case Store.get_neighborhood_by_lottery_id(lottery_id) do
+      %Neighborhood{id: id} ->
+        Map.put(lottery_project, :neighborhood_id, id)
+
+      nil ->
+        {:ok, neighborhoods} = poll_neighborhoods()
+
+        id =
+          Enum.find_value(neighborhoods, fn n ->
+            if n.lottery_id == lottery_id, do: n.id, else: nil
+          end)
+
+        Map.put(lottery_project, :neighborhood_id, id)
+    end
+  end
+
+  @spec add_borough(map()) :: map()
+  defp add_borough(%{boro_lkp: lottery_id} = lottery_project) do
+    case Store.get_borough_by_lottery_id(lottery_id) do
+      %Borough{id: id} ->
+        Map.put(lottery_project, :borough_id, id)
+
+      nil ->
+        {:ok, boroughs} = poll_boroughs()
+
+        id =
+          Enum.find_value(boroughs, fn n ->
+            if n.lottery_id == lottery_id, do: n.id, else: nil
+          end)
+
+        Map.put(lottery_project, :neighborhood_id, id)
+    end
   end
 
   @spec update_project(%Project{}, map()) :: %Project{}
@@ -113,8 +150,9 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   defp poll_neighborhoods do
     neighborhoods = Store.list_neighborhoods()
     lottery_neighborhoods = LotteryApi.list_neighborhoods!()
-    sync_lottery_neighborhoods(neighborhoods, lottery_neighborhoods)
-    Store.refresh_neighborhoods()
+    updated_neighborhoods = sync_lottery_neighborhoods(neighborhoods, lottery_neighborhoods)
+
+    with :ok <- Store.refresh_neighborhoods(), do: {:ok, updated_neighborhoods}
   end
 
   @spec sync_lottery_neighborhoods([%Neighborhood{}], [map()]) :: [%Neighborhood{}]
@@ -134,8 +172,9 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   defp poll_boroughs do
     boroughs = Store.list_boroughs()
     lottery_boroughs = LotteryApi.list_boroughs!()
-    sync_lottery_boroughs(boroughs, lottery_boroughs)
-    Store.refresh_boroughs()
+    updated_boroughs = sync_lottery_boroughs(boroughs, lottery_boroughs)
+
+    with :ok <- Store.refresh_boroughs(), do: {:ok, updated_boroughs}
   end
 
   @spec sync_lottery_boroughs([%Borough{}], [map()]) :: [%Borough{}]
