@@ -6,6 +6,7 @@ config :nyc_housing, ecto_repos: [NycHousing.Repo]
 
 config :nyc_housing, NycHousing.Repo,
   adapter: Ecto.Adapters.Postgres,
+  types: NycHousing.PostgresTypes,
   database: "nyc_housing",
   username: "postgres",
   password: "postgres",

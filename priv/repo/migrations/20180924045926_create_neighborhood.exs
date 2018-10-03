@@ -6,6 +6,7 @@ defmodule NycHousing.Repo.Migrations.CreateNeighborhood do
       add(:name, :string)
       add(:short_name, :string)
       add(:sort_order, :integer)
+      add(:location, :geometry)
       add(:lottery_id, :integer)
 
       timestamps()

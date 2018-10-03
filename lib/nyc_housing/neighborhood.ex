@@ -7,6 +7,7 @@ defmodule NycHousing.Neighborhood do
     field(:name, :string)
     field(:short_name, :string)
     field(:sort_order, :integer)
+    field(:location, Geo.PostGIS.Geometry)
     field(:lottery_id, :integer)
 
     timestamps()

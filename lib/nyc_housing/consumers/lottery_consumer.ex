@@ -92,9 +92,6 @@ defmodule NycHousing.Consumers.LotteryConsumer do
 
   @spec insert_project(map()) :: %Project{}
   defp insert_project(lottery_project) do
-    neighborhood = Store.get_neighborhood_by_lottery_id(lottery_project.neighborhood_lkp)
-    borough = Store.get_borough_by_lottery_id(lottery_project.boro_lkp)
-
     lottery_project
     |> add_neighborhood()
     |> add_borough()

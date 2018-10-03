@@ -27,6 +27,7 @@ defmodule NycHousing.MixProject do
       {:timex, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
+      {:geo_postgis, "~> 2.0"},
       {:cowboy, "~> 2.4"},
       {:plug, "~> 1.6"},
       {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false}
