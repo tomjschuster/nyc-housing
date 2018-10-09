@@ -1,6 +1,7 @@
 defmodule NycHousing.Consumers.LotteryConsumer do
   use GenServer
 
+  alias NycHousing.Consumers.Log
   alias NycHousing.{Store, Repo, Project, Neighborhood, Borough}
   alias NycHousing.ExternalData.LotteryApi
 
@@ -53,8 +54,11 @@ defmodule NycHousing.Consumers.LotteryConsumer do
     IO.puts("Polling")
 
     with {:ok, _} <- poll_neighborhoods(),
+         {:ok, _} <- Log.log_lottery_neighborhood(),
          {:ok, _} <- poll_boroughs(),
+         {:ok, _} <- Log.log_lottery_borough(),
          {:ok, _} <- poll_projects(),
+         {:ok, _} <- Log.log_lottery_project(),
          IO.puts("Polling Complete"),
          do: :ok
   end

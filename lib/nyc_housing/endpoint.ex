@@ -18,18 +18,18 @@ defmodule NycHousing.Endpoint do
 
   # Routes
 
-  get("/", do: index_html(conn))
+  get "/", do: index_html(conn)
 
-  get("/api/projects", do: index_projects(conn))
-  get("/api/projects/:project_id", do: show_project(conn))
+  get "/api/projects", do: index_projects(conn)
+  get "/api/projects/:project_id", do: show_project(conn)
 
-  get("/api/neighborhoods", do: index_neighborhoods(conn))
-  get("/api/neighborhoods/:neighborhood_id", do: show_neighborhood(conn))
+  get "/api/neighborhoods", do: index_neighborhoods(conn)
+  get "/api/neighborhoods/:neighborhood_id", do: show_neighborhood(conn)
 
-  get("/api/boroughs", do: index_boroughs(conn))
-  get("/api/boroughs/:borough_id", do: show_borough(conn))
+  get "/api/boroughs", do: index_boroughs(conn)
+  get "/api/boroughs/:borough_id", do: show_borough(conn)
 
-  match(_, do: send_resp(conn, 404, "Not Found"))
+  match _, do: send_resp(conn, 404, "Not Found")
 
   # Actions
 

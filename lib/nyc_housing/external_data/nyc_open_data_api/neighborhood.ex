@@ -1,6 +1,6 @@
 # https://data.cityofnewyork.us/resource/xyye-rtrs.json
 
-defmodule NycHousing.ExternalData.NycOpenData.Neighborhood do
+defmodule NycHousing.ExternalData.NycOpenDataApi.Neighborhood do
   use HTTPoison.Base
 
   @base "https://data.cityofnewyork.us/resource/xyye-rtrs.json"

@@ -10,6 +10,7 @@ defmodule NycHousing.Application do
       ),
       NycHousing.Repo,
       NycHousing.Store,
+      NycHousing.Consumers.NycOpenDataConsumer,
       NycHousing.Consumers.LotteryConsumer
     ]
 

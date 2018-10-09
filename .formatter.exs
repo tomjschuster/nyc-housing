@@ -1,0 +1,55 @@
+locals_without_parens = [
+  # Ecto Migration
+  create: 1,
+  create: 2,
+  create_if_not_exists: 1,
+  create_if_not_exists: 2,
+  alter: 2,
+  drop: 1,
+  drop_if_exists: 1,
+  table: 1,
+  table: 2,
+  add: 2,
+  add: 3,
+  modify: 2,
+  modify: 3,
+  references: 1,
+  references: 2,
+  remove: 1,
+  rename: 2,
+  rename: 3,
+  index: 2,
+  index: 3,
+  unique_index: 2,
+  unique_index: 3,
+  constraint: 2,
+  constraint: 3,
+  execute: 1,
+  execute: 2,
+
+  # Schema
+  field: 1,
+  field: 2,
+  field: 3,
+  timestamps: 1,
+  belongs_to: 2,
+  belongs_to: 3,
+  has_one: 2,
+  has_one: 3,
+  has_many: 2,
+  has_many: 3,
+  many_to_many: 2,
+  many_to_many: 3,
+  embeds_one: 2,
+  embeds_one: 3,
+  embeds_one: 4,
+  embeds_many: 2,
+  embeds_many: 3,
+  embeds_many: 4
+]
+
+[
+  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"],
+  import_deps: [:plug, :ecto],
+  locals_without_parens: locals_without_parens
+]

@@ -4,15 +4,15 @@ defmodule NycHousing.Project do
   alias __MODULE__
 
   schema "project" do
-    field(:name, :string)
-    field(:neighborhood_id, :integer)
-    field(:borough_id, :integer)
-    field(:addresses, {:array, :string})
-    field(:published_date, :date)
-    field(:start_date, :date)
-    field(:end_date, :date)
-    field(:deleted_date, :date)
-    field(:lottery_id, :integer)
+    field :name, :string
+    field :neighborhood_id, :integer
+    field :borough_id, :integer
+    field :addresses, {:array, :string}
+    field :published_date, :date
+    field :start_date, :date
+    field :end_date, :date
+    field :deleted_date, :date
+    field :lottery_id, :integer
 
     timestamps()
   end

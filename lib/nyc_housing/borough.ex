@@ -4,10 +4,10 @@ defmodule NycHousing.Borough do
   alias __MODULE__
 
   schema "borough" do
-    field(:name, :string)
-    field(:short_name, :string)
-    field(:sort_order, :integer)
-    field(:lottery_id, :integer)
+    field :name, :string
+    field :short_name, :string
+    field :sort_order, :integer
+    field :lottery_id, :integer
 
     timestamps()
   end

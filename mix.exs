@@ -36,6 +36,7 @@ defmodule NycHousing.MixProject do
 
   defp aliases do
     [
+      compile: ["compile --warnings-as-errors"],
       setup: ["ecto.create", "ecto.migrate"],
       reset: ["ecto.drop", "setup"]
     ]
