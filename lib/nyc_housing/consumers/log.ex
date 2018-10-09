@@ -37,6 +37,7 @@ defmodule NycHousing.Consumers.Log do
 
     from p in PollLog,
       where: [data_type: ^data_type_string, source: ^source_string],
-      order_by: [desc: p.polled_at]
+      order_by: [desc: p.polled_at],
+      select: p.polled_at
   end
 end

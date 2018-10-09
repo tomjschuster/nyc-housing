@@ -24,6 +24,8 @@ defmodule NycHousing.Consumers.LotteryConsumer do
   # Server
   @impl true
   def init(:ok) do
+    IO.puts("Initializing Lottery Consumer")
+
     with :ok <- poll_all(),
          timer <- schedule_work(),
          do: {:ok, timer}
@@ -51,15 +53,15 @@ defmodule NycHousing.Consumers.LotteryConsumer do
 
   @spec poll_all() :: :ok
   defp poll_all do
-    IO.puts("Polling")
+    IO.puts("Polling Lottery")
 
     with {:ok, _} <- poll_neighborhoods(),
-         {:ok, _} <- Log.log_lottery_neighborhood(),
+         :ok <- Log.log_lottery_neighborhood(),
          {:ok, _} <- poll_boroughs(),
-         {:ok, _} <- Log.log_lottery_borough(),
+         :ok <- Log.log_lottery_borough(),
          {:ok, _} <- poll_projects(),
-         {:ok, _} <- Log.log_lottery_project(),
-         IO.puts("Polling Complete"),
+         :ok <- Log.log_lottery_project(),
+         IO.puts("Polling Lottery Complete"),
          do: :ok
   end
 

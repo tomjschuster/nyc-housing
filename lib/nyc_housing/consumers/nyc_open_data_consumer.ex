@@ -1,20 +1,26 @@
 defmodule NycHousing.Consumers.NycOpenDataConsumer do
-  use Task
+  use GenServer
 
   alias NycHousing.Consumers.Log
   alias NycHousing.{Store, Repo, Neighborhood}
   alias NycHousing.ExternalData.NycOpenDataApi
 
-  def start_link(_), do: Task.start_link(__MODULE__, :run, [])
+  def start_link(_), do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
 
-  def run do
+  def init(:ok) do
+    IO.puts("Initializing Nyc Open Data Consumer")
+
     case Log.nyc_open_data_neighborhoods_last_polled() do
       nil ->
+        IO.puts("Polling NYC Open Data Neighborhoods")
+
         with :ok <- poll_neighborhoods(),
-             do: Log.log_nyc_open_data_neighborhoods()
+             IO.puts("NYC Open Data Neighborhoods Complete"),
+             :ok <- Log.log_nyc_open_data_neighborhoods(),
+             do: :ignore
 
       %DateTime{} ->
-        :ok
+        :ignore
     end
   end
 
@@ -23,9 +29,8 @@ defmodule NycHousing.Consumers.NycOpenDataConsumer do
   defp poll_neighborhoods do
     neighborhoods = Store.list_neighborhoods()
     api_neighborhoods = NycOpenDataApi.list_neighborhoods!()
-    updated_neighborhoods = sync_api_neighborhoods(neighborhoods, api_neighborhoods)
-
-    with :ok <- Store.refresh_neighborhoods(), do: {:ok, updated_neighborhoods}
+    sync_api_neighborhoods(neighborhoods, api_neighborhoods)
+    Store.refresh_neighborhoods()
   end
 
   @spec sync_api_neighborhoods([%Neighborhood{}], [map()]) :: [%Neighborhood{}]
